@@ -1,0 +1,12 @@
+{
+  "patterns": [
+    {
+      "pattern": "command not found: mvn",
+      "solution": "sudo apt install maven"
+    },
+    {
+      "pattern": "java: command not found",
+      "solution": "sudo apt install openjdk-17-jdk"
+    }
+  ]
+}

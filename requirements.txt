@@ -1,0 +1,4 @@
+openrouter
+ipywidgets
+python-dotenv
+
