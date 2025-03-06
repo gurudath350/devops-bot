@@ -4,12 +4,17 @@ import json
 import subprocess
 from openrouter import OpenRouter
 from IPython.display import display, Markdown
+from dotenv import load_dotenv  # Add this import
 
 class DevOpsBot:
     def __init__(self):
-        self.client = OpenRouter(api_key=os.getenv('OPENROUTER_API_KEY'))
-        self.model = "qwen2.5-vl-72b-instruct"
-        self.error_db = self._load_error_db()
+        # Load environment variables
+        load_dotenv()  # Loads from .env file
+        
+        # Get API key from environment
+        self.client = OpenRouter(
+            api_key=os.getenv("OPENROUTER_API_KEY")
+        )
         
     def _load_error_db(self):
         with open('error_db.json') as f:
