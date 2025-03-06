@@ -3,18 +3,15 @@ import re
 import json
 import subprocess
 from openrouter import OpenRouter
-from IPython.display import display, Markdown
-from dotenv import load_dotenv  # Add this import
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class DevOpsBot:
     def __init__(self):
-        # Load environment variables
-        load_dotenv()  # Loads from .env file
-        
-        # Get API key from environment
-        self.client = OpenRouter(
-            api_key=os.getenv("OPENROUTER_API_KEY")
-        )
+        self.client = OpenRouter(api_key=os.getenv('OPENROUTER_API_KEY'))
+        self.model = os.getenv('OPENROUTER_MODEL', 'qwen2.5-vl-72b-instruct')
+        self.error_db = self._load_error_db()
         
     def _load_error_db(self):
         with open('error_db.json') as f:
@@ -26,7 +23,7 @@ class DevOpsBot:
             if re.search(entry['pattern'], error_msg, re.IGNORECASE):
                 return entry['solution']
             
-        # Query Qwen
+        # Query OpenRouter model
         response = self.client.generate(
             model=self.model,
             prompt=f"Fix this error on Ubuntu 22.04:\n{error_msg}",
@@ -37,18 +34,18 @@ class DevOpsBot:
     def install_tool(self, tool_name):
         script_path = f"install_scripts/{tool_name}.sh"
         if not os.path.exists(script_path):
-            return f"⚠️ No script for {tool_name}"
+            return f"⚠️ No installation script for {tool_name}"
         
         try:
             result = subprocess.run(
                 [script_path], 
-                capture_output=True, 
+                capture_output=True,
                 text=True,
                 shell=True
             )
             return f"✅ Installed {tool_name}:\n{result.stdout}"
         except Exception as e:
-            return f"❌ Failed: {str(e)}"
+            return f"❌ Installation failed: {str(e)}"
     
     def execute_command(self, command):
         try:
@@ -64,4 +61,4 @@ class DevOpsBot:
     
     def update_repo(self):
         subprocess.run(["git", "pull", "origin", "main"])
-        return "🔄 Updated! Please restart the runtime."
+        return "🔄 Repository updated! Restart runtime to apply changes."
